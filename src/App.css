@@ -1,0 +1,238 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* ===== Toolbar ===== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.toolbar__spacer {
+  flex: 1;
+}
+
+.toolbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--text);
+  padding-right: 6px;
+  user-select: none;
+}
+
+.toolbar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.toolbar__btn:hover {
+  background: var(--bg-soft);
+}
+
+.toolbar__btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent-strong);
+}
+.toolbar__btn.primary:hover {
+  background: var(--accent-strong);
+}
+
+.toolbar__btn.danger {
+  color: var(--danger);
+  border-color: #f1c3c1;
+}
+.toolbar__btn.danger:hover {
+  background: #fdecec;
+}
+
+.toolbar__btn.active {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+
+.icon-btn {
+  padding: 6px 8px;
+}
+
+.toolbar__unit-toggle {
+  display: inline-flex;
+  gap: 0;
+}
+.toolbar__unit-toggle .toolbar__btn {
+  border-radius: 0;
+}
+.toolbar__unit-toggle .toolbar__btn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.toolbar__unit-toggle .toolbar__btn:last-child {
+  border-radius: 0 6px 6px 0;
+}
+.toolbar__unit-toggle .toolbar__btn:not(:first-child) {
+  border-left: none;
+}
+
+.toolbar__input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  min-width: 140px;
+}
+
+/* ===== Canvas ===== */
+.canvas-wrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.canvas {
+  user-select: none;
+}
+
+/* ===== TotalArea HUD ===== */
+.total-area {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  box-shadow: var(--shadow);
+}
+
+.total-area__label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.total-area__value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ===== Modal ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 20, 30, 0.45);
+}
+
+.modal__panel {
+  position: relative;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  min-width: 360px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* ===== Field ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.field__input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.field__input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.field__group {
+  display: flex;
+  gap: 6px;
+}
+
+.pill {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.pill:hover {
+  background: var(--bg-soft);
+}
+.pill:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.pill--active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent-strong);
+}

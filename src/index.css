@@ -1,0 +1,41 @@
+:root {
+  --text: #2a2a32;
+  --text-muted: #6b6b78;
+  --bg: #ffffff;
+  --bg-soft: #f7f7f9;
+  --border: #e5e4e7;
+  --accent: #6366f1;
+  --accent-strong: #4f46e5;
+  --danger: #e0524d;
+  --shadow:
+    rgba(0, 0, 0, 0.08) 0 6px 18px -4px,
+    rgba(0, 0, 0, 0.04) 0 2px 4px -1px;
+
+  font: 14px/1.4 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+}
+
+input[type='number'] {
+  font: inherit;
+}
