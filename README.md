@@ -45,3 +45,7 @@ total area — no sign-up, no install, nothing leaves your computer.
 
 Groundwork is open source and runs entirely in the browser. To build it
 locally or contribute, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+[MIT](LICENSE)
