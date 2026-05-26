@@ -26,17 +26,23 @@ const items = [
 ]
 
 const state = { items, displayUnit: 'ft', viewport: { tx: 300, ty: 40, scale: 1 } }
+const theme = process.env.SCREENSHOT_THEME // 'light' | 'dark' | undefined (system)
+const out = process.env.SCREENSHOT_OUT ?? 'docs/screenshot.png'
 
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2 })
-await page.addInitScript((s) => {
-  localStorage.setItem('floor-plan-v1', JSON.stringify({ state: s, version: 2 }))
-}, state)
+await page.addInitScript(
+  ({ s, t }) => {
+    localStorage.setItem('floor-plan-v1', JSON.stringify({ state: s, version: 2 }))
+    if (t) localStorage.setItem('groundwork-theme', t)
+  },
+  { s: state, t: theme },
+)
 await page.goto(URL, { waitUntil: 'networkidle' })
 await page.waitForSelector('.toolbar')
 await page.waitForTimeout(400)
 
 mkdirSync('docs', { recursive: true })
-await page.screenshot({ path: 'docs/screenshot.png' })
+await page.screenshot({ path: out })
 await browser.close()
-console.log('Wrote docs/screenshot.png')
+console.log(`Wrote ${out}`)

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
 import { usePanZoom, screenToWorld } from '../hooks/usePanZoom'
-import { ShapeLayer } from './ShapeLayer'
+import { ShapeLayer, ShapeLabels } from './ShapeLayer'
 import { PX_PER_FT } from '../constants'
 import type { LayoutItem, Point } from '../types'
 import { useDrag } from '../hooks/useDrag'
@@ -94,7 +94,7 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
       height="100%"
       style={{
         display: 'block',
-        background: '#f7f7f9',
+        background: 'var(--canvas-bg)',
         touchAction: 'none',
         cursor: measureMode ? 'crosshair' : 'default',
       }}
@@ -106,12 +106,21 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
       <g
         transform={`translate(${viewport.tx} ${viewport.ty}) scale(${PX_PER_FT * viewport.scale})`}
       >
+        {/* Pass 1: shape fills/outlines (interaction lives here) */}
         {renderItems.map((item) => (
           <ShapeLayer
             key={item.id}
             item={item as LayoutItem}
             selected={effectiveSelected.has(item.id)}
             onShapePointerDown={handleShapePointerDown}
+            onDoubleClick={onRequestEdit}
+          />
+        ))}
+        {/* Pass 2: labels on top of every fill, so none render as faint ghosts */}
+        {renderItems.map((item) => (
+          <ShapeLabels
+            key={item.id}
+            item={item as LayoutItem}
             onLabelPointerDown={onLabelPointerDown}
             onDoubleClick={onRequestEdit}
           />
@@ -144,10 +153,10 @@ function BackgroundGrid({ viewport, tx, ty, w, h }: { viewport: number; tx: numb
   const offY = ((ty % step) + step) % step
   const lines: React.ReactElement[] = []
   for (let x = offX; x < w; x += step) {
-    lines.push(<line key={`v${x}`} x1={x} x2={x} y1={0} y2={h} stroke="#e6e6ec" strokeWidth={x === offX || (x - tx) % (step * 5) < 0.5 ? 1 : 0.5} />)
+    lines.push(<line key={`v${x}`} x1={x} x2={x} y1={0} y2={h} style={{ stroke: 'var(--grid-line)' }} strokeWidth={x === offX || (x - tx) % (step * 5) < 0.5 ? 1 : 0.5} />)
   }
   for (let y = offY; y < h; y += step) {
-    lines.push(<line key={`h${y}`} x1={0} x2={w} y1={y} y2={y} stroke="#e6e6ec" strokeWidth={1} />)
+    lines.push(<line key={`h${y}`} x1={0} x2={w} y1={y} y2={y} style={{ stroke: 'var(--grid-line)' }} strokeWidth={1} />)
   }
   return <g pointerEvents="none">{lines}</g>
 }

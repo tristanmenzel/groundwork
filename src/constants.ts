@@ -7,6 +7,9 @@ export const SNAP_BUFFER: UnitValue = { ft: 0.5, mm: 0.5 * FT_TO_MM }
 export const ARROW_NUDGE_FT = 0.25
 export const ARROW_NUDGE_MM = 50
 
+// Edges shorter than this (in feet) are union/numeric artifacts — don't label them.
+export const MIN_EDGE_LABEL_FT = 0.1
+
 // 12 pastel hues
 const HUES = [0, 30, 60, 95, 130, 165, 200, 220, 250, 285, 315, 340]
 

@@ -70,9 +70,9 @@
 }
 
 .toolbar__btn.active {
-  background: var(--text);
+  background: var(--accent);
   color: white;
-  border-color: var(--text);
+  border-color: var(--accent-strong);
 }
 
 .icon-btn {
@@ -120,7 +120,7 @@
   position: absolute;
   right: 16px;
   bottom: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--panel-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 14px;

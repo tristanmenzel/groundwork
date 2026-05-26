@@ -69,6 +69,20 @@ function spanContaining(sorted: number[], p: number): AxisSpan | null {
   return { min: left, max: right }
 }
 
+/** Even-odd point-in-polygon test across all rings. */
+export function pointInRings(rings: Point[][], p: Point): boolean {
+  let inside = false
+  for (const ring of rings) {
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const a = ring[i]!
+      const b = ring[j]!
+      const crosses = a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x
+      if (crosses) inside = !inside
+    }
+  }
+  return inside
+}
+
 /** Horizontal and vertical interior spans through `p`, or null if p is not inside the rings. */
 export function measureAt(rings: Point[][], p: Point): Measurement | null {
   const h = spanContaining(horizontalCrossings(rings, p.y), p.x)

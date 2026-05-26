@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%groundwork-icon.svg?v=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Groundwork</title>
+    <script>
+      // Apply the saved/system theme before first paint to avoid a flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem('groundwork-theme')
+          var dark = stored
+            ? stored === 'dark'
+            : matchMedia('(prefers-color-scheme: dark)').matches
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

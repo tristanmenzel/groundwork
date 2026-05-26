@@ -3,6 +3,7 @@ import { useFloorPlanStore } from '../store/useFloorPlanStore'
 import { isRoom } from '../types'
 import { downloadJson, importJsonFile } from '../persistence/exportImport'
 import { Logo } from './Logo'
+import { ThemeToggle } from './ThemeToggle'
 
 type Props = {
   onAddClick: () => void
@@ -134,6 +135,8 @@ export function Toolbar({ onAddClick }: Props) {
           e.target.value = ''
         }}
       />
+
+      <ThemeToggle />
     </div>
   )
 }
