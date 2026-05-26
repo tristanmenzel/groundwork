@@ -1,75 +1,47 @@
 # Groundwork
 
-Groundwork is a client-only React app for sketching simple floor plans and
-calculating square footage. Add right-angle triangles, squares, and rectangles; drag them
-into place with edge snapping; combine adjoining shapes into rooms; export and
-import the layout as JSON.
+**Sketch a floor plan, get the square footage.** Groundwork is a free,
+browser-based tool for laying out rooms from simple shapes and reading off the
+total area — no sign-up, no install, nothing leaves your computer.
 
-## Quick start
+### → [Open Groundwork](https://tristanmenzel.github.io/groundwork/)
 
-```sh
-npm install
-npm run dev
-```
+![Groundwork — an L-shaped living room, a bedroom, a bathroom and a balcony laid out with area and edge measurements](docs/screenshot.png)
 
-Opens at http://localhost:5173/
+## What you can do
 
-## Scripts
+- **Build rooms from shapes** — drop in rectangles, squares, and right-angle
+  triangles, and size them to your space.
+- **Snap things together** — drag shapes and their edges and corners magnetise
+  to neighbours so your layout lines up cleanly.
+- **Combine shapes into a room** — merge several shapes into one room. Overlaps
+  are never double-counted, so the area and outline stay honest.
+- **See every measurement** — each edge is labelled with its length, every
+  shape shows its area, and the running **total square footage** sits in the
+  bottom-right.
+- **Measure as you go** — the ruler tool shows live distances from your cursor
+  to the walls in every direction.
+- **Work in your units** — switch between feet, millimetres, and metres at any
+  time; nothing is lost in the conversion.
+- **Keep your work** — layouts save automatically in your browser, and you can
+  export/import them as a file to back up or share.
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | Start the Vite dev server |
-| `npm run build` | Type-check + produce a production bundle in `dist/` |
-| `npm run preview` | Serve the production bundle locally |
-| `npm run typecheck` | Run `tsc -b` only |
-| `npm test` | Run the test suite once |
-| `npm run test:watch` | Watch mode |
-| `npm run lint` | ESLint |
+## Using Groundwork
 
-## How to use
+- **Add a shape** — click **+ Add Shape**, pick triangle / square / rectangle,
+  enter the dimensions, and add it. Double-click any shape to edit it.
+- **Select** — click a shape, Ctrl-click to add or remove others, or drag a box
+  across empty space to select everything inside it.
+- **Move** — drag the area label in the middle of a shape. Arrow keys nudge the
+  selection a little at a time; **Delete** removes it.
+- **Make a room** — select two or more shapes and choose **Combine into Room**.
+  Select a room and choose **Disband** to split it back into shapes.
+- **Get around** — right-click (or middle-click, or hold space) and drag to pan;
+  scroll to zoom.
+- **Save / share** — use **Export** to download your plan as a file and
+  **Import** to load it back.
 
-- **Add shape** — opens a modal with a triangle / square / rectangle picker.
-  Squares take one `Side`. Rectangles take `Width` + `Height`. Triangles take
-  `Width` + `Perpendicular height` + which corner is the 90° angle.
-- **Select** — click a shape. Ctrl-click to add to (or remove from) the
-  selection.
-- **Edit** — double-click a shape.
-- **Move** — drag the area label in the middle of a shape. Edges magnetise to
-  other shapes' edges within ½ ft. Move past that and they release.
-  Arrow keys nudge the selection by 0.25 ft (or 50 mm). `Delete` / `Backspace`
-  removes the current selection.
-- **Combine as Room** — select two or more shapes, then click *Combine as Room*
-  in the toolbar. The room moves as a single unit; its area is the union of
-  the original shapes (overlapping zones are not double-counted), and its
-  perimeter follows the exterior boundary only.
-- **Disband Room** — select a room, click *Disband*. The original shapes are
-  restored at their world positions.
-- **Pan / zoom** — right-click drag, middle-click drag, or hold space and drag
-  to pan. Wheel to zoom.
-- **Unit toggle** — flip between `ft` and `mm`. The underlying measurements
-  store both values, so toggling is lossless.
-- **Export / Import** — the toolbar buttons round-trip your layout as JSON.
+## Running it yourself / contributing
 
-## Notes
-
-- All state is on the client. The layout auto-saves to `localStorage` under
-  `floor-plan-v1`, so refreshes preserve your work.
-- The pastel palette has 12 hues. Each new shape claims the lowest unused hue,
-  so colours stay unique until the palette is exhausted (then it recycles).
-  Tweak `src/color/palette.ts` to change the allocation.
-
-## Structure
-
-```
-src/
-├── App.tsx                         Top-level shell
-├── components/                     Toolbar, Canvas, ShapeLayer, modals, HUD
-├── geometry/                       shapeVertices, polygon, union, snap (+ tests)
-├── units/                          dual-storage unit values (+ tests)
-├── color/                          pastel palette
-├── store/useFloorPlanStore.ts      Zustand + localStorage persistence
-├── persistence/                    JSON schema + export/import
-├── hooks/                          usePanZoom, useDrag, useKeyboardNudge
-├── types.ts
-└── constants.ts                    Snap buffer, nudge step, palette hues
-```
+Groundwork is open source and runs entirely in the browser. To build it
+locally or contribute, see [CONTRIBUTING.md](CONTRIBUTING.md).
