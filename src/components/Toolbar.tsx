@@ -129,7 +129,6 @@ export function Toolbar({ onAddClick }: Props) {
             const payload = await importJsonFile(file)
             replaceState(payload)
           } catch (err) {
-            // eslint-disable-next-line no-alert
             alert(`Could not import: ${err instanceof Error ? err.message : String(err)}`)
           }
           e.target.value = ''

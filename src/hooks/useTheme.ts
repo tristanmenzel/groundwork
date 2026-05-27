@@ -19,11 +19,6 @@ function systemDark(): boolean {
   return typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-function resolve(pref: ThemePref): Resolved {
-  if (pref === 'system') return systemDark() ? 'dark' : 'light'
-  return pref
-}
-
 function apply(theme: Resolved) {
   document.documentElement.dataset.theme = theme
 }
@@ -34,20 +29,21 @@ function apply(theme: Resolved) {
  */
 export function useTheme() {
   const [pref, setPref] = useState<ThemePref>(readPref)
-  const [resolved, setResolved] = useState<Resolved>(() => resolve(readPref()))
+  const [systemIsDark, setSystemIsDark] = useState<boolean>(systemDark)
+  // Derived during render — no state mirroring inside an effect.
+  const resolved: Resolved = pref === 'system' ? (systemIsDark ? 'dark' : 'light') : pref
 
+  // Sync the resolved theme to the DOM (an external system, so an effect is the
+  // right home for it).
   useEffect(() => {
-    const next = resolve(pref)
-    setResolved(next)
-    apply(next)
+    apply(resolved)
+  }, [resolved])
 
+  // While following the system preference, track its live changes.
+  useEffect(() => {
     if (pref !== 'system') return
     const mq = matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => {
-      const r = systemDark() ? 'dark' : 'light'
-      setResolved(r)
-      apply(r)
-    }
+    const onChange = () => setSystemIsDark(mq.matches)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [pref])

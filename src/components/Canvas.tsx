@@ -24,9 +24,14 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
   const { viewport, worldCenter } = usePanZoom(svgRef)
 
   const [measurePoint, setMeasurePoint] = useState<Point | null>(null)
-  useEffect(() => {
+  // Clear the stale measure point when leaving measure mode. Adjusting state
+  // during render (rather than in an effect) is React's recommended pattern for
+  // resetting state in response to a prop/state change.
+  const [prevMeasureMode, setPrevMeasureMode] = useState(measureMode)
+  if (measureMode !== prevMeasureMode) {
+    setPrevMeasureMode(measureMode)
     if (!measureMode) setMeasurePoint(null)
-  }, [measureMode])
+  }
 
   function handlePointerMove(e: React.PointerEvent) {
     if (!measureMode) return
