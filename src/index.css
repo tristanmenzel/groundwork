@@ -49,6 +49,24 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  /* The app is a single fullscreen canvas: suppress the browser's own touch
+     gestures (pinch-zoom, double-tap zoom, pull-to-refresh, overscroll) so our
+     pan/zoom handlers are the only ones acting. */
+  touch-action: none;
+  overscroll-behavior: none;
+  /* Stop long-press from triggering text selection / the iOS callout, which
+     fights our long-press-to-select gesture. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Text fields still need selection so users can edit their values. */
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 * {

@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 import { Toolbar } from './components/Toolbar'
 import { Canvas } from './components/Canvas'
 import { TotalArea } from './components/TotalArea'
 import { AddShapeModal } from './components/AddShapeModal'
 import { EditShapeModal } from './components/EditShapeModal'
+import { HelpModal } from './components/HelpModal'
 import { SelectionActionBar } from './components/SelectionActionBar'
 import { useFloorPlanStore } from './store/useFloorPlanStore'
 import { useIsMobile } from './hooks/useIsMobile'
@@ -14,6 +15,7 @@ import { isShape } from './types'
 
 export default function App() {
   const [addOpen, setAddOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const items = useFloorPlanStore((s) => s.items)
@@ -30,6 +32,20 @@ export default function App() {
 
   useKeyboardShortcuts()
 
+  // iOS Safari pinch-zooms the page via non-standard gesture events that ignore
+  // `touch-action`. Suppress them so the canvas pinch handler is the only zoom.
+  useEffect(() => {
+    const prevent = (e: Event) => e.preventDefault()
+    document.addEventListener('gesturestart', prevent)
+    document.addEventListener('gesturechange', prevent)
+    document.addEventListener('gestureend', prevent)
+    return () => {
+      document.removeEventListener('gesturestart', prevent)
+      document.removeEventListener('gesturechange', prevent)
+      document.removeEventListener('gestureend', prevent)
+    }
+  }, [])
+
   // Canvas registers its worldCenter function so the Add modal can place at viewport center.
   const worldCenterRef = useRef<() => Point>(() => ({ x: 0, y: 0 }))
   const registerWorldCenter = useCallback((fn: () => Point) => {
@@ -38,7 +54,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Toolbar onAddClick={() => setAddOpen(true)} />
+      <Toolbar onAddClick={() => setAddOpen(true)} onHelpClick={() => setHelpOpen(true)} />
       <div className={`canvas-wrap${barVisible ? ' canvas-wrap--bar' : ''}`}>
         <Canvas onRequestEdit={setEditingId} registerWorldCenter={registerWorldCenter} />
         <TotalArea />
@@ -48,6 +64,7 @@ export default function App() {
         <AddShapeModal worldCenter={() => worldCenterRef.current()} onClose={() => setAddOpen(false)} />
       )}
       {editingShape && <EditShapeModal shape={editingShape} onClose={() => setEditingId(null)} />}
+      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
     </div>
   )
 }

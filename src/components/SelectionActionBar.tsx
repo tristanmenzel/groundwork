@@ -3,10 +3,10 @@ import { isRoom } from '../types'
 import { useIsMobile } from '../hooks/useIsMobile'
 
 /**
- * Bottom action bar for touch selection mode. Shows the live selection count and
- * a "Cancel selection mode" button. On mobile viewports it also hosts the
- * contextual actions (Combine / Disband / rename / Delete) that are hidden from
- * the cramped top toolbar.
+ * Bottom action bar for touch selection mode. Two rows: an info row (the room
+ * name field when a single room is selected, otherwise the selection count) and
+ * an actions row (Combine / Ungroup / Delete, plus Cancel). On mobile viewports
+ * this is the home for the contextual actions hidden from the top toolbar.
  */
 export function SelectionActionBar() {
   const items = useFloorPlanStore((s) => s.items)
@@ -37,49 +37,97 @@ export function SelectionActionBar() {
 
   return (
     <div className="action-bar" role="toolbar" aria-label="Selection actions">
-      <span className="action-bar__count">{count} selected</span>
+      <div className="action-bar__row">
+        {isMobile && selectedRoom ? (
+          <input
+            className="toolbar__input action-bar__name"
+            aria-label="Room name"
+            value={selectedRoom.name}
+            onChange={(e) => renameRoom(selectedRoom.id, e.target.value)}
+          />
+        ) : (
+          <span className="action-bar__count">
+            {count} {count === 1 ? 'item' : 'items'} selected
+          </span>
+        )}
+      </div>
 
-      {isMobile && (
-        <>
-          {canCombine && (
-            <button type="button" className="toolbar__btn" onClick={combine}>
-              Combine into Room
-            </button>
-          )}
-          {canDisband && (
-            <button type="button" className="toolbar__btn" onClick={disbandSelected}>
-              {roomCount > 1 ? 'Disband Rooms' : 'Disband Room'}
-            </button>
-          )}
-          {selectedRoom && (
-            <input
-              className="toolbar__input"
-              aria-label="Room name"
-              value={selectedRoom.name}
-              onChange={(e) => renameRoom(selectedRoom.id, e.target.value)}
-            />
-          )}
-          {count > 0 && (
-            <button
-              type="button"
-              className="toolbar__btn danger"
-              onClick={removeSelected}
-              aria-label="Delete selection"
-              title="Delete selection"
-            >
-              Delete
-            </button>
-          )}
-        </>
-      )}
+      <div className="action-bar__row action-bar__row--actions">
+        {isMobile && canCombine && (
+          <button type="button" className="toolbar__btn" onClick={combine}>
+            Combine
+          </button>
+        )}
+        {isMobile && canDisband && (
+          <button type="button" className="toolbar__btn" onClick={disbandSelected}>
+            Ungroup
+          </button>
+        )}
+        {isMobile && count > 0 && (
+          <button
+            type="button"
+            className="toolbar__btn danger icon-btn"
+            onClick={removeSelected}
+            aria-label="Delete selection"
+            title="Delete selection"
+          >
+            <TrashIcon />
+          </button>
+        )}
 
-      <div className="action-bar__spacer" />
+        <div className="action-bar__spacer" />
 
-      {selectionMode && (
-        <button type="button" className="toolbar__btn" onClick={cancel}>
-          Cancel selection mode
+        <button
+          type="button"
+          className="toolbar__btn icon-btn"
+          onClick={cancel}
+          aria-label="Clear selection"
+          title="Clear selection"
+        >
+          <CloseIcon />
         </button>
-      )}
+      </div>
     </div>
+  )
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
+
+function TrashIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 6h18" />
+      <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
   )
 }

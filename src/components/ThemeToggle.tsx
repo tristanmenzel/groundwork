@@ -1,17 +1,20 @@
 import { useTheme } from '../hooks/useTheme'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme()
   const isDark = theme === 'dark'
+  const isMobile = useIsMobile()
   return (
     <button
       type="button"
-      className="toolbar__btn icon-btn"
+      className={`toolbar__btn${isMobile ? ' icon-btn' : ''}`}
       onClick={toggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
+      {!isMobile && (isDark ? 'Light' : 'Dark')}
     </button>
   )
 }

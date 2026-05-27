@@ -104,6 +104,21 @@
   min-width: 140px;
 }
 
+/* On mobile the toolbar is icon-only: keep every action on a single row and
+   scroll horizontally if it overflows (the page disables touch scrolling, so
+   re-enable it on this axis). */
+@media (max-width: 640px) {
+  .toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    touch-action: pan-x;
+  }
+  .toolbar > *:not(.toolbar__spacer) {
+    flex-shrink: 0;
+  }
+}
+
 /* ===== Canvas ===== */
 .canvas-wrap {
   position: relative;
@@ -122,7 +137,7 @@
   right: 0;
   bottom: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
   padding: 8px 12px;
   padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
@@ -130,7 +145,17 @@
   border-top: 1px solid var(--border);
   box-shadow: var(--shadow);
   z-index: 50;
+}
+
+.action-bar__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-bar__row--actions {
   overflow-x: auto;
+  touch-action: pan-x;
 }
 
 .action-bar__count {
@@ -140,13 +165,18 @@
   white-space: nowrap;
 }
 
+.action-bar__name {
+  flex: 1;
+  min-width: 0;
+}
+
 .action-bar__spacer {
   flex: 1;
 }
 
-/* The HUD sits above the action bar when it's showing, so it isn't covered. */
+/* The HUD sits above the (two-row) action bar when it's showing. */
 .canvas-wrap--bar .total-area {
-  bottom: 72px;
+  bottom: 96px;
 }
 
 /* ===== TotalArea HUD ===== */
@@ -198,17 +228,44 @@
   border-radius: 12px;
   padding: 20px 24px;
   box-shadow: var(--shadow);
-  min-width: 360px;
-  max-width: 90vw;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  /* Re-enable touch scrolling inside the dialog (the page disables it). */
+  touch-action: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.modal__panel--wide {
+  width: min(440px, calc(100vw - 32px));
 }
 
 .modal__title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
+}
+
+/* ===== Help modal ===== */
+.help-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.help-item__term {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.help-item__desc {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.45;
 }
 
 .modal__actions {

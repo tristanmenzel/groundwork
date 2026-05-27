@@ -8,9 +8,10 @@ import { ThemeToggle } from './ThemeToggle'
 
 type Props = {
   onAddClick: () => void
+  onHelpClick: () => void
 }
 
-export function Toolbar({ onAddClick }: Props) {
+export function Toolbar({ onAddClick, onHelpClick }: Props) {
   const items = useFloorPlanStore((s) => s.items)
   const selectionIds = useFloorPlanStore((s) => s.selectionIds)
   const displayUnit = useFloorPlanStore((s) => s.displayUnit)
@@ -91,13 +92,14 @@ export function Toolbar({ onAddClick }: Props) {
 
       <button
         type="button"
-        className={`toolbar__btn icon-btn ${measureMode ? 'active' : ''}`}
+        className={`toolbar__btn ${isMobile ? 'icon-btn' : ''} ${measureMode ? 'active' : ''}`}
         onClick={toggleMeasureMode}
         aria-label="Measure tool"
         aria-pressed={measureMode}
         title="Measure tool"
       >
         <RulerIcon />
+        {!isMobile && 'Measure'}
       </button>
 
       <div className="toolbar__unit-toggle" role="group" aria-label="Unit toggle">
@@ -124,11 +126,25 @@ export function Toolbar({ onAddClick }: Props) {
         </button>
       </div>
 
-      <button type="button" className="toolbar__btn" onClick={() => downloadJson()}>
-        Export
+      <button
+        type="button"
+        className={`toolbar__btn${isMobile ? ' icon-btn' : ''}`}
+        onClick={() => downloadJson()}
+        aria-label="Save"
+        title="Save"
+      >
+        <ExportIcon />
+        {!isMobile && 'Save'}
       </button>
-      <button type="button" className="toolbar__btn" onClick={() => fileRef.current?.click()}>
-        Import
+      <button
+        type="button"
+        className={`toolbar__btn${isMobile ? ' icon-btn' : ''}`}
+        onClick={() => fileRef.current?.click()}
+        aria-label="Open"
+        title="Open"
+      >
+        <ImportIcon />
+        {!isMobile && 'Open'}
       </button>
       <input
         ref={fileRef}
@@ -149,7 +165,38 @@ export function Toolbar({ onAddClick }: Props) {
       />
 
       <ThemeToggle />
+
+      <button
+        type="button"
+        className={`toolbar__btn${isMobile ? ' icon-btn' : ''}`}
+        onClick={onHelpClick}
+        aria-label="Help"
+        title="Help"
+      >
+        <HelpIcon />
+        {!isMobile && 'Help'}
+      </button>
     </div>
+  )
+}
+
+function HelpIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
   )
 }
 
@@ -171,6 +218,44 @@ function RulerIcon() {
       <path d="M12 5.5 14 7.5" />
       <path d="M6 11.5 8 13.5" />
       <path d="M15 14.5 17 16.5" />
+    </svg>
+  )
+}
+
+function ExportIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <polyline points="17 21 17 13 7 13 7 21" />
+      <polyline points="7 3 7 8 15 8" />
+    </svg>
+  )
+}
+
+function ImportIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
     </svg>
   )
 }
