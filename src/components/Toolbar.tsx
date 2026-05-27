@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
 import { isRoom } from '../types'
 import { downloadJson, importJsonFile } from '../persistence/exportImport'
+import { useIsMobile } from '../hooks/useIsMobile'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -21,6 +22,7 @@ export function Toolbar({ onAddClick }: Props) {
   const measureMode = useFloorPlanStore((s) => s.measureMode)
   const toggleMeasureMode = useFloorPlanStore((s) => s.toggleMeasureMode)
   const replaceState = useFloorPlanStore((s) => s.replaceState)
+  const isMobile = useIsMobile()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const selected = items.filter((it) => selectionIds.includes(it.id))
@@ -33,45 +35,56 @@ export function Toolbar({ onAddClick }: Props) {
     <div className="toolbar">
       <span className="toolbar__brand">
         <Logo size={22} />
-        Groundwork
+        {!isMobile && 'Groundwork'}
       </span>
 
-      <button type="button" className="toolbar__btn primary" onClick={onAddClick}>
-        + Add Shape
+      <button
+        type="button"
+        className="toolbar__btn primary"
+        onClick={onAddClick}
+        aria-label="Add shape"
+        title="Add shape"
+      >
+        {isMobile ? '+' : '+ Add Shape'}
       </button>
 
-      {canCombine && (
-        <button type="button" className="toolbar__btn" onClick={combine}>
-          Combine into Room
-        </button>
-      )}
+      {/* Contextual actions move to the bottom SelectionActionBar on mobile. */}
+      {!isMobile && (
+        <>
+          {canCombine && (
+            <button type="button" className="toolbar__btn" onClick={combine}>
+              Combine into Room
+            </button>
+          )}
 
-      {canDisband && (
-        <button type="button" className="toolbar__btn" onClick={disbandSelected}>
-          {roomCount > 1 ? 'Disband Rooms' : 'Disband Room'}
-        </button>
-      )}
+          {canDisband && (
+            <button type="button" className="toolbar__btn" onClick={disbandSelected}>
+              {roomCount > 1 ? 'Disband Rooms' : 'Disband Room'}
+            </button>
+          )}
 
-      {selectedRoom && (
-        <input
-          className="toolbar__input"
-          aria-label="Room name"
-          value={selectedRoom.name}
-          onChange={(e) => renameRoom(selectedRoom.id, e.target.value)}
-        />
-      )}
+          {selectedRoom && (
+            <input
+              className="toolbar__input"
+              aria-label="Room name"
+              value={selectedRoom.name}
+              onChange={(e) => renameRoom(selectedRoom.id, e.target.value)}
+            />
+          )}
 
-      {selected.length > 0 && (
-        <button
-          type="button"
-          className="toolbar__btn danger"
-          onClick={removeSelected}
-          aria-label="Delete selection"
-          title="Delete selection"
-        >
-          <TrashIcon />
-          Delete
-        </button>
+          {selected.length > 0 && (
+            <button
+              type="button"
+              className="toolbar__btn danger"
+              onClick={removeSelected}
+              aria-label="Delete selection"
+              title="Delete selection"
+            >
+              <TrashIcon />
+              Delete
+            </button>
+          )}
+        </>
       )}
 
       <div className="toolbar__spacer" />

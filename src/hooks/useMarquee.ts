@@ -51,7 +51,10 @@ export function useMarquee(svgRef: React.RefObject<SVGSVGElement | null>) {
 
   function onPointerDown(e: React.PointerEvent) {
     if (e.button !== 0) return
-    if (useFloorPlanStore.getState().measureMode) return // measure tool owns the canvas
+    if (e.pointerType === 'touch') return // touch drags pan the canvas (see usePanZoom)
+    const state = useFloorPlanStore.getState()
+    if (state.measureMode) return // measure tool owns the canvas
+    if (state.selectionMode) return // selection mode: tap-to-toggle only, no box-select
     if (spaceDown.current) return // space+drag is a pan
     if (e.target !== svgRef.current) return // only on empty background
     const svg = svgRef.current

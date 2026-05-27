@@ -13,6 +13,7 @@ type State = {
   displayUnit: Unit
   viewport: Viewport
   measureMode: boolean
+  selectionMode: boolean
 }
 
 type Actions = {
@@ -36,6 +37,8 @@ type Actions = {
   setDisplayUnit: (unit: Unit) => void
   setViewport: (v: Viewport) => void
   toggleMeasureMode: () => void
+  enterSelectionMode: () => void
+  exitSelectionMode: () => void
 
   replaceState: (payload: { items: LayoutItem[]; displayUnit: Unit }) => void
   resetAll: () => void
@@ -49,6 +52,7 @@ const initial: State = {
   displayUnit: 'ft',
   viewport: { tx: 0, ty: 0, scale: 1 },
   measureMode: false,
+  selectionMode: false,
 }
 
 function newId(): string {
@@ -136,7 +140,7 @@ export const useFloorPlanStore = create<FloorPlanStore>()(
         set((s) => {
           const sel = new Set(s.selectionIds)
           if (sel.size === 0) return s
-          return { items: s.items.filter((it) => !sel.has(it.id)), selectionIds: [] }
+          return { items: s.items.filter((it) => !sel.has(it.id)), selectionIds: [], selectionMode: false }
         })
       },
 
@@ -176,7 +180,7 @@ export const useFloorPlanStore = create<FloorPlanStore>()(
         if (shapes.length < 2) return
         const room = buildRoomFromShapes(shapes, nextRoomName(items))
         const remaining = items.filter((it) => !selectedSet.has(it.id))
-        set({ items: [...remaining, room], selectionIds: [room.id] })
+        set({ items: [...remaining, room], selectionIds: [room.id], selectionMode: false })
       },
 
       disbandSelectedRooms: () => {
@@ -194,7 +198,11 @@ export const useFloorPlanStore = create<FloorPlanStore>()(
         const others = items.filter((it) => !roomIds.has(it.id))
         // Keep any selected non-room items selected, plus the freshly-restored shapes.
         const keepSelected = selectionIds.filter((id) => !roomIds.has(id))
-        set({ items: [...others, ...restored], selectionIds: [...keepSelected, ...restored.map((s) => s.id)] })
+        set({
+          items: [...others, ...restored],
+          selectionIds: [...keepSelected, ...restored.map((s) => s.id)],
+          selectionMode: false,
+        })
       },
 
       renameRoom: (roomId, name) => {
@@ -214,6 +222,8 @@ export const useFloorPlanStore = create<FloorPlanStore>()(
       setDisplayUnit: (unit) => set({ displayUnit: unit }),
       setViewport: (v) => set({ viewport: v }),
       toggleMeasureMode: () => set((s) => ({ measureMode: !s.measureMode })),
+      enterSelectionMode: () => set({ selectionMode: true }),
+      exitSelectionMode: () => set({ selectionMode: false }),
 
       replaceState: ({ items, displayUnit }) => set({ items, displayUnit, selectionIds: [] }),
       resetAll: () => set({ ...initial }),

@@ -27,3 +27,16 @@ export const PX_PER_FT = 20
 // Min/max zoom factors
 export const MIN_SCALE = 0.2
 export const MAX_SCALE = 8
+
+// Touch long-press to enter selection mode: hold duration and movement
+// tolerance (in screen px) before the press is treated as a drag/pan instead.
+export const LONG_PRESS_MS = 500
+export const LONG_PRESS_MOVE_PX = 10
+
+// Viewports at or below this width (px) are treated as "mobile": the contextual
+// actions move to the bottom action bar and the Add button collapses to "+".
+export const MOBILE_BREAKPOINT = 640
+
+// Fired on `window` when a two-finger touch gesture (pan/pinch) begins, so any
+// in-flight single-finger gesture (drag, long-press) can bail out.
+export const GESTURE_CANCEL_EVENT = 'groundwork:gesture-cancel'

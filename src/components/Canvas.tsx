@@ -6,6 +6,7 @@ import { PX_PER_FT } from '../constants'
 import type { LayoutItem, Point } from '../types'
 import { useDrag } from '../hooks/useDrag'
 import { useMarquee } from '../hooks/useMarquee'
+import { useLongPress } from '../hooks/useLongPress'
 import { SnapGuides } from './SnapGuides'
 import { MeasureOverlay } from './MeasureOverlay'
 
@@ -21,7 +22,9 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
   const selectOnly = useFloorPlanStore((s) => s.selectOnly)
   const toggleSelect = useFloorPlanStore((s) => s.toggleSelect)
   const measureMode = useFloorPlanStore((s) => s.measureMode)
+  const selectionMode = useFloorPlanStore((s) => s.selectionMode)
   const { viewport, worldCenter } = usePanZoom(svgRef)
+  const { arm } = useLongPress()
 
   const [measurePoint, setMeasurePoint] = useState<Point | null>(null)
   // Clear the stale measure point when leaving measure mode. Adjusting state
@@ -46,7 +49,7 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
     registerWorldCenter(worldCenter)
   }, [worldCenter, registerWorldCenter])
 
-  const { onLabelPointerDown, guides } = useDrag(svgRef)
+  const { onLabelPointerDown, guides } = useDrag(svgRef, arm)
   const { onPointerDown: onMarqueePointerDown, rect: marqueeRect, previewIds, additive } = useMarquee(svgRef)
 
   const selectionSet = new Set(selectionIds)
@@ -63,6 +66,11 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
     if (e.button !== 0) return
     if (measureMode) return // measure tool is non-interactive w.r.t. selection
     e.stopPropagation()
+    if (selectionMode) {
+      // In selection mode a tap toggles the item in/out of the selection.
+      toggleSelect(id)
+      return
+    }
     if (e.ctrlKey || e.metaKey) {
       toggleSelect(id)
     } else {
@@ -70,6 +78,14 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
         selectOnly(id)
       }
     }
+    // Touch: a held press here enters selection mode with this item selected.
+    arm(e, id)
+  }
+
+  function handleCanvasPointerDown(e: React.PointerEvent) {
+    onMarqueePointerDown(e)
+    // Touch long-press on empty canvas enters selection mode (empty selection).
+    if (e.target === svgRef.current) arm(e, null)
   }
 
   const [size, setSize] = useState({ w: 1000, h: 700 })
@@ -103,7 +119,7 @@ export function Canvas({ onRequestEdit, registerWorldCenter }: Props) {
         touchAction: 'none',
         cursor: measureMode ? 'crosshair' : 'default',
       }}
-      onPointerDown={onMarqueePointerDown}
+      onPointerDown={handleCanvasPointerDown}
       onPointerMove={handlePointerMove}
       onPointerLeave={() => setMeasurePoint(null)}
     >

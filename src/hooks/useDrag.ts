@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
 import type { Point } from '../types'
 import { snapOffset, type SnapGuide } from '../geometry/snap'
-import { SNAP_BUFFER, PX_PER_FT } from '../constants'
+import { SNAP_BUFFER, PX_PER_FT, GESTURE_CANCEL_EVENT } from '../constants'
 
 type Snapshot = {
   pointerId: number
@@ -13,7 +13,10 @@ type Snapshot = {
   origin: Map<string, Point>
 }
 
-export function useDrag(svgRef: React.RefObject<SVGSVGElement | null>) {
+export function useDrag(
+  svgRef: React.RefObject<SVGSVGElement | null>,
+  arm: (e: React.PointerEvent, id: string | null) => void,
+) {
   const snap = useRef<Snapshot | null>(null)
   const [guides, setGuides] = useState<SnapGuide[]>([])
   const draggedRef = useRef(false)
@@ -23,12 +26,19 @@ export function useDrag(svgRef: React.RefObject<SVGSVGElement | null>) {
     const store = useFloorPlanStore.getState()
     if (store.measureMode) return // measure tool: no dragging
     e.stopPropagation()
+    // In selection mode a tap toggles the item; dragging-to-move is disabled.
+    if (store.selectionMode) {
+      store.toggleSelect(id)
+      return
+    }
     // Ctrl/Cmd-click on the label is a selection toggle, not a drag — so clicking
     // anywhere on a shape (body or label) adds/removes it from the selection.
     if (e.ctrlKey || e.metaKey) {
       store.toggleSelect(id)
       return
     }
+    // Touch: a held press here enters selection mode with this item selected.
+    arm(e, id)
     // Make sure the dragged item is in the selection. If it isn't, select-only it.
     const selection = store.selectionIds.includes(id) ? store.selectionIds : (store.selectOnly(id), [id])
     const draggingIds = new Set(selection)
@@ -47,6 +57,17 @@ export function useDrag(svgRef: React.RefObject<SVGSVGElement | null>) {
     window.addEventListener('pointermove', onPointerMove, { passive: false })
     window.addEventListener('pointerup', onPointerUp)
     window.addEventListener('pointercancel', onPointerUp)
+    // A two-finger touch gesture (pan/pinch) cancels an in-flight drag.
+    window.addEventListener(GESTURE_CANCEL_EVENT, endDrag)
+  }
+
+  function endDrag() {
+    window.removeEventListener('pointermove', onPointerMove)
+    window.removeEventListener('pointerup', onPointerUp)
+    window.removeEventListener('pointercancel', onPointerUp)
+    window.removeEventListener(GESTURE_CANCEL_EVENT, endDrag)
+    setGuides([])
+    snap.current = null
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -67,11 +88,7 @@ export function useDrag(svgRef: React.RefObject<SVGSVGElement | null>) {
     const s = snap.current
     if (!s) return
     if (e.pointerId !== s.pointerId) return
-    window.removeEventListener('pointermove', onPointerMove)
-    window.removeEventListener('pointerup', onPointerUp)
-    window.removeEventListener('pointercancel', onPointerUp)
-    setGuides([])
-    snap.current = null
+    endDrag()
   }
 
   function applyDelta(s: Snapshot, proposed: Point) {
