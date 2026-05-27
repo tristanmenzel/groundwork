@@ -110,27 +110,22 @@ export function Toolbar({ onAddClick, onHelpClick, onEdit }: Props) {
         {!isMobile && 'Measure'}
       </button>
 
-      <div className="toolbar__unit-toggle" role="group" aria-label="Unit toggle">
+      <div className="toolbar__unit-toggle" role="group" aria-label="Unit system">
         <button
           type="button"
           className={`toolbar__btn ${displayUnit === 'ft' ? 'active' : ''}`}
           onClick={() => setDisplayUnit('ft')}
+          title="Imperial — feet"
         >
-          ft
+          {isMobile ? 'Imp' : 'Imperial'}
         </button>
         <button
           type="button"
-          className={`toolbar__btn ${displayUnit === 'mm' ? 'active' : ''}`}
+          className={`toolbar__btn ${displayUnit !== 'ft' ? 'active' : ''}`}
           onClick={() => setDisplayUnit('mm')}
+          title="Metric — millimetres, area in square metres"
         >
-          mm
-        </button>
-        <button
-          type="button"
-          className={`toolbar__btn ${displayUnit === 'm' ? 'active' : ''}`}
-          onClick={() => setDisplayUnit('m')}
-        >
-          m
+          {isMobile ? 'Met' : 'Metric'}
         </button>
       </div>
 

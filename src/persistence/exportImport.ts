@@ -1,5 +1,6 @@
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
 import { STORAGE_VERSION } from '../constants'
+import type { Unit } from '../types'
 import { floorPlanPayloadSchema, type FloorPlanPayload } from './schema'
 
 export function downloadJson() {
@@ -20,7 +21,7 @@ export function downloadJson() {
   URL.revokeObjectURL(url)
 }
 
-export async function importJsonFile(file: File): Promise<{ items: FloorPlanPayload['items']; displayUnit: FloorPlanPayload['displayUnit'] }> {
+export async function importJsonFile(file: File): Promise<{ items: FloorPlanPayload['items']; displayUnit: Unit }> {
   const text = await file.text()
   let parsed: unknown
   try {
@@ -32,5 +33,7 @@ export async function importJsonFile(file: File): Promise<{ items: FloorPlanPayl
   if (!result.success) {
     throw new Error(`Invalid floor-plan file: ${result.error.issues[0]?.message ?? 'unknown error'}`)
   }
-  return { items: result.data.items, displayUnit: result.data.displayUnit }
+  // Legacy files may carry the old display-only 'm'; treat it as metric (mm).
+  const displayUnit: Unit = result.data.displayUnit === 'm' ? 'mm' : result.data.displayUnit
+  return { items: result.data.items, displayUnit }
 }

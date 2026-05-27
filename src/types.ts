@@ -1,5 +1,6 @@
-// 'm' is display-only — values are still stored as ft + mm; metres are derived from mm.
-export type Unit = 'ft' | 'mm' | 'm'
+// Lengths are stored as both ft and mm, so toggling the display unit is lossless.
+// 'ft' is shown as "imp" and 'mm' as "met" in the UI; metric area renders in sq m.
+export type Unit = 'ft' | 'mm'
 
 export type UnitValue = { ft: number; mm: number }
 
