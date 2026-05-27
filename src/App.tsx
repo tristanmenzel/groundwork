@@ -54,11 +54,15 @@ export default function App() {
 
   return (
     <div className="app">
-      <Toolbar onAddClick={() => setAddOpen(true)} onHelpClick={() => setHelpOpen(true)} />
+      <Toolbar
+        onAddClick={() => setAddOpen(true)}
+        onHelpClick={() => setHelpOpen(true)}
+        onEdit={setEditingId}
+      />
       <div className={`canvas-wrap${barVisible ? ' canvas-wrap--bar' : ''}`}>
         <Canvas onRequestEdit={setEditingId} registerWorldCenter={registerWorldCenter} />
         <TotalArea />
-        <SelectionActionBar />
+        <SelectionActionBar onEdit={setEditingId} />
       </div>
       {addOpen && (
         <AddShapeModal worldCenter={() => worldCenterRef.current()} onClose={() => setAddOpen(false)} />

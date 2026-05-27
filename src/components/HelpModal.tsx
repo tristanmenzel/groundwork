@@ -10,7 +10,11 @@ type HelpItem = { term: string; desc: string }
 const DESKTOP: HelpItem[] = [
   {
     term: 'Add a shape',
-    desc: 'Click + Add Shape, pick a type and enter its dimensions. Double-click any shape to edit it.',
+    desc: 'Click + Add Shape, pick a type and enter its dimensions.',
+  },
+  {
+    term: 'Edit',
+    desc: 'Double-click a shape, or select one and click Edit, to change its dimensions.',
   },
   {
     term: 'Select',
@@ -37,7 +41,11 @@ const DESKTOP: HelpItem[] = [
 const MOBILE: HelpItem[] = [
   {
     term: 'Add a shape',
-    desc: 'Tap +, pick a type and enter its dimensions. Double-tap a shape to edit it.',
+    desc: 'Tap +, pick a type and enter its dimensions.',
+  },
+  {
+    term: 'Edit',
+    desc: 'Select a single shape, then tap Edit in the bottom bar to change its dimensions.',
   },
   {
     term: 'Select',

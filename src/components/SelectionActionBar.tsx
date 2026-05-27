@@ -1,6 +1,10 @@
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
-import { isRoom } from '../types'
+import { isRoom, isShape } from '../types'
 import { useIsMobile } from '../hooks/useIsMobile'
+
+type Props = {
+  onEdit: (id: string) => void
+}
 
 /**
  * Bottom action bar for touch selection mode. Two rows: an info row (the room
@@ -8,7 +12,7 @@ import { useIsMobile } from '../hooks/useIsMobile'
  * an actions row (Combine / Ungroup / Delete, plus Cancel). On mobile viewports
  * this is the home for the contextual actions hidden from the top toolbar.
  */
-export function SelectionActionBar() {
+export function SelectionActionBar({ onEdit }: Props) {
   const items = useFloorPlanStore((s) => s.items)
   const selectionIds = useFloorPlanStore((s) => s.selectionIds)
   const selectionMode = useFloorPlanStore((s) => s.selectionMode)
@@ -26,6 +30,7 @@ export function SelectionActionBar() {
 
   const selected = items.filter((it) => selectionIds.includes(it.id))
   const selectedRoom = selected.length === 1 && isRoom(selected[0]!) ? selected[0]! : null
+  const selectedShape = selected.length === 1 && isShape(selected[0]!) ? selected[0]! : null
   const roomCount = selected.filter(isRoom).length
   const canCombine = selected.length >= 2
   const canDisband = roomCount > 0
@@ -53,6 +58,11 @@ export function SelectionActionBar() {
       </div>
 
       <div className="action-bar__row action-bar__row--actions">
+        {isMobile && selectedShape && (
+          <button type="button" className="toolbar__btn" onClick={() => onEdit(selectedShape.id)}>
+            Edit
+          </button>
+        )}
         {isMobile && canCombine && (
           <button type="button" className="toolbar__btn" onClick={combine}>
             Combine

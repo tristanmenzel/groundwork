@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useFloorPlanStore } from '../store/useFloorPlanStore'
-import { isRoom } from '../types'
+import { isRoom, isShape } from '../types'
 import { downloadJson, importJsonFile } from '../persistence/exportImport'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { Logo } from './Logo'
@@ -9,9 +9,10 @@ import { ThemeToggle } from './ThemeToggle'
 type Props = {
   onAddClick: () => void
   onHelpClick: () => void
+  onEdit: (id: string) => void
 }
 
-export function Toolbar({ onAddClick, onHelpClick }: Props) {
+export function Toolbar({ onAddClick, onHelpClick, onEdit }: Props) {
   const items = useFloorPlanStore((s) => s.items)
   const selectionIds = useFloorPlanStore((s) => s.selectionIds)
   const displayUnit = useFloorPlanStore((s) => s.displayUnit)
@@ -28,6 +29,7 @@ export function Toolbar({ onAddClick, onHelpClick }: Props) {
 
   const selected = items.filter((it) => selectionIds.includes(it.id))
   const selectedRoom = selected.length === 1 && isRoom(selected[0]!) ? (selected[0]!) : null
+  const selectedShape = selected.length === 1 && isShape(selected[0]!) ? (selected[0]!) : null
   const roomCount = selected.filter(isRoom).length
   const canCombine = selected.length >= 2
   const canDisband = roomCount > 0
@@ -52,6 +54,12 @@ export function Toolbar({ onAddClick, onHelpClick }: Props) {
       {/* Contextual actions move to the bottom SelectionActionBar on mobile. */}
       {!isMobile && (
         <>
+          {selectedShape && (
+            <button type="button" className="toolbar__btn" onClick={() => onEdit(selectedShape.id)}>
+              Edit
+            </button>
+          )}
+
           {canCombine && (
             <button type="button" className="toolbar__btn" onClick={combine}>
               Combine into Room
