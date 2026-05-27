@@ -6,6 +6,7 @@ import { isRoom } from '../types'
 import { pickNextColorIndex } from '../color/palette'
 import { vertices } from '../geometry/shapeVertices'
 import { polygonBBox } from '../geometry/polygon'
+import { unitForLocales } from '../units/unit'
 
 type State = {
   items: LayoutItem[]
@@ -46,10 +47,18 @@ type Actions = {
 
 export type FloorPlanStore = State & Actions
 
+// First-run default from the browser locale; a persisted choice overrides this
+// on later loads (zustand merges stored state over `initial`).
+function defaultDisplayUnit(): Unit {
+  if (typeof navigator === 'undefined') return 'mm'
+  const locales = navigator.languages?.length ? navigator.languages : [navigator.language]
+  return unitForLocales(locales)
+}
+
 const initial: State = {
   items: [],
   selectionIds: [],
-  displayUnit: 'ft',
+  displayUnit: defaultDisplayUnit(),
   viewport: { tx: 0, ty: 0, scale: 1 },
   measureMode: false,
   selectionMode: false,

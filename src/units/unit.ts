@@ -1,6 +1,25 @@
 import { FT_TO_MM } from '../constants'
 import type { Unit, UnitValue } from '../types'
 
+// Canada is grouped with the US as imperial: floor plans there are conventionally
+// laid out in feet, even though the country is otherwise metric.
+const IMPERIAL_REGIONS = new Set(['US', 'CA'])
+
+/** Pick a sensible default unit from the user's locale(s). Metric unless the
+ *  first locale with a known region is the US or Canada. */
+export function unitForLocales(locales: readonly string[]): Unit {
+  for (const locale of locales) {
+    let region: string | undefined
+    try {
+      region = new Intl.Locale(locale).region ?? undefined
+    } catch {
+      region = locale.split('-')[1]?.toUpperCase()
+    }
+    if (region) return IMPERIAL_REGIONS.has(region) ? 'ft' : 'mm'
+  }
+  return 'mm'
+}
+
 export function createUnitValue(value: number, unit: Unit): UnitValue {
   if (!Number.isFinite(value)) {
     return { ft: 0, mm: 0 }

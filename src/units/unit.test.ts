@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createUnitValue, formatArea, formatLength, inUnit } from './unit'
+import { createUnitValue, formatArea, formatLength, inUnit, unitForLocales } from './unit'
 
 describe('createUnitValue', () => {
   it('stores both units when entered as ft', () => {
@@ -37,6 +37,29 @@ describe('formatLength', () => {
     expect(formatLength(v, 'ft')).toBe('3 ft')
     // mm measurements round to the nearest whole millimetre
     expect(formatLength(v, 'mm')).toBe('914 mm')
+  })
+})
+
+describe('unitForLocales', () => {
+  it('uses feet for the US and Canada', () => {
+    expect(unitForLocales(['en-US'])).toBe('ft')
+    expect(unitForLocales(['en-CA'])).toBe('ft')
+    expect(unitForLocales(['fr-CA'])).toBe('ft')
+  })
+
+  it('uses millimetres elsewhere', () => {
+    expect(unitForLocales(['en-GB'])).toBe('mm')
+    expect(unitForLocales(['en-AU'])).toBe('mm')
+    expect(unitForLocales(['de-DE'])).toBe('mm')
+  })
+
+  it('falls back to metric when no region is present', () => {
+    expect(unitForLocales(['en'])).toBe('mm')
+    expect(unitForLocales([])).toBe('mm')
+  })
+
+  it('uses the first locale that carries a region', () => {
+    expect(unitForLocales(['en', 'en-US'])).toBe('ft')
   })
 })
 
