@@ -63,6 +63,7 @@ function ShapeBodyImpl({ item, selected, onShapePointerDown, onDoubleClick }: Bo
   const color = paletteColor(item.colorIndex)
   const { pathD } = useItemRender(item)
   const clipId = `clip-${item.id}`
+  const hatchId = `hatch-${item.id}`
 
   return (
     <g
@@ -71,9 +72,21 @@ function ShapeBodyImpl({ item, selected, onShapePointerDown, onDoubleClick }: Bo
       style={{ cursor: 'pointer' }}
     >
       {selected && (
-        <clipPath id={clipId}>
-          <path d={pathD} />
-        </clipPath>
+        <>
+          <clipPath id={clipId}>
+            <path d={pathD} />
+          </clipPath>
+          {/* Diagonal hatch in world units, so it scales with zoom like the drawing. */}
+          <pattern
+            id={hatchId}
+            patternUnits="userSpaceOnUse"
+            width={0.5}
+            height={0.5}
+            patternTransform="rotate(45)"
+          >
+            <line x1={0} y1={0} x2={0} y2={0.5} stroke={color.border} strokeWidth={0.08} />
+          </pattern>
+        </>
       )}
       <path
         d={pathD}
@@ -84,17 +97,21 @@ function ShapeBodyImpl({ item, selected, onShapePointerDown, onDoubleClick }: Bo
         opacity={0.95}
       />
       {selected && (
-        // Selection highlight: a wide stroke clipped to the shape so it only
-        // grows inward — the shape's outer footprint never changes.
-        <path
-          d={pathD}
-          fill="none"
-          stroke={color.border}
-          strokeWidth={0.24}
-          strokeLinejoin="round"
-          clipPath={`url(#${clipId})`}
-          pointerEvents="none"
-        />
+        <>
+          {/* Hatch overlay: lines on top of the fill, which still shows between them. */}
+          <path d={pathD} fill={`url(#${hatchId})`} opacity={0.35} pointerEvents="none" />
+          {/* Bold highlight: a wide stroke clipped to the shape so it only grows
+              inward — the shape's outer footprint never changes. */}
+          <path
+            d={pathD}
+            fill="none"
+            stroke={color.border}
+            strokeWidth={0.34}
+            strokeLinejoin="round"
+            clipPath={`url(#${clipId})`}
+            pointerEvents="none"
+          />
+        </>
       )}
     </g>
   )
